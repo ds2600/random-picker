@@ -4,9 +4,11 @@ import os
 import time
 import utils2
 import random
+import sys
 
 parser = utils2.get_argument_parser()
 parser.add_argument("--list", action="store_true", help="Just randomize the list of items")
+parser.add_argument("--animate", action="store_true", help="Display spinning animation")
 args = parser.parse_args()
 logger = utils2.setup_logging(debug=args.debug)
 
@@ -36,6 +38,21 @@ def generate_seed():
     logger.debug(f"Seed: {seed}")
     return seed
 
+def animate_selection(items, final_choice):
+    print("\nSpinning...\n")
+    spin_cycles = 30
+    delay = 0.05
+
+    for i in range(spin_cycles):
+        pick = random.choice(items)
+        sys.stdout.write(f"\r{pick}  ")
+        sys.stdout.flush()
+        time.sleep(delay)
+        delay += 0.02
+
+    sys.stdout.write(f"\rSelected: {final_choice}    \n")
+    sys.stdout.flush()
+
 def pick_random_item(items):
     logger.info("Picking item...") 
     if not items:
@@ -51,7 +68,10 @@ def pick_random_item(items):
             logger.debug(f"Seeded list:\n{items}")
             selected_item = secrets.choice(items)
             logger.info(f"Selected: {selected_item}")
-            print(f"Selected: {selected_item}")
+            if args.animate:
+                animate_selection(items, selected_item)
+            else:
+                print(f"Selected: {selected_item}")
 
 def main():
     logger.info("Starting...")
