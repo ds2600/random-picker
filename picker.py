@@ -29,11 +29,13 @@ def get_list():
 
 def generate_seed():
     logger.info("Generating seed...")
+    logger.info("Entropy sources: Unix Epoch time, Process ID, 64 byte random string from OS cryptographic entropy sources.")
     entropy_sources = (
         str(time.time_ns()) +
         str(os.getpid()) +
         str(os.urandom(64))
     )
+    logger.info("Running SHA512 on entropy string")
     seed = int(hashlib.sha512(entropy_sources.encode()).hexdigest(), 16)
     logger.debug(f"Seed: {seed}")
     return seed
